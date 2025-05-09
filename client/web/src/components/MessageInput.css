@@ -1,0 +1,91 @@
+.message-input {
+  display: flex;
+  padding: var(--space-md);
+  background-color: var(--light-color);
+  border-top: 1px solid #e0e0e0;
+}
+
+.message-textarea {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  resize: none;
+  font-family: inherit;
+  font-size: var(--font-size-base);
+  min-height: 44px;
+  max-height: 150px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.message-textarea:focus {
+  border-color: var(--primary-color);
+}
+
+.message-textarea:disabled {
+  background-color: #f5f5f5;
+  opacity: 0.7;
+}
+
+.send-button {
+  margin-left: 0.5rem;
+  padding: 0 1.25rem;
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  height: 44px;
+  min-width: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
+}
+
+.send-button:hover:not(:disabled) {
+  background-color: var(--primary-color);
+}
+
+.send-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Mobile devices */
+@media (max-width: 480px) {
+  .message-input {
+    padding: var(--space-sm);
+  }
+  
+  .message-textarea {
+    padding: 0.5rem 0.75rem;
+    font-size: var(--font-size-base);
+    min-height: 40px;
+  }
+  
+  .send-button {
+    min-width: 60px;
+    padding: 0 0.75rem;
+    height: 40px;
+  }
+}
+
+/* Landscape mode */
+@media (max-height: 480px) and (orientation: landscape) {
+  .message-input {
+    padding: var(--space-xs) var(--space-sm);
+  }
+  
+  .message-textarea {
+    min-height: 36px;
+    max-height: 80px;
+  }
+  
+  .send-button {
+    height: 36px;
+  }
+} 

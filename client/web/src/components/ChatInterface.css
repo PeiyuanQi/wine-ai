@@ -1,0 +1,35 @@
+.chat-interface {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  height: 100%;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Tablets and smaller desktops */
+@media (max-width: 900px) {
+  .chat-interface {
+    max-width: 100%;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+/* Mobile devices */
+@media (max-width: 480px) {
+  .chat-interface {
+    border-radius: 0;
+  }
+}
+
+/* Landscape mode */
+@media (max-height: 480px) and (orientation: landscape) {
+  .chat-interface {
+    border-radius: 0;
+  }
+} 

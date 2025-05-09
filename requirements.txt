@@ -1,6 +1,6 @@
 openai
 python-dotenv
-nltk
+jieba
 fastapi
 uvicorn
 pydantic

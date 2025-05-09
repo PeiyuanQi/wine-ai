@@ -1,0 +1,301 @@
+.message-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  scrollbar-width: thin;
+}
+
+.welcome-message {
+  text-align: center;
+  max-width: 600px;
+  margin: auto;
+  padding: var(--space-xl);
+  background-color: var(--light-color);
+  border-radius: 8px;
+}
+
+.welcome-message h2 {
+  color: var(--primary-color);
+  margin-bottom: var(--space-md);
+}
+
+.welcome-message ul {
+  text-align: left;
+  margin-top: var(--space-md);
+  padding-left: 1.5rem;
+}
+
+.welcome-message li {
+  margin-bottom: var(--space-sm);
+  font-style: italic;
+}
+
+.message {
+  display: flex;
+  margin-bottom: var(--space-sm);
+}
+
+.user-message {
+  justify-content: flex-end;
+}
+
+.ai-message {
+  justify-content: flex-start;
+}
+
+.message-bubble {
+  padding: 0.75rem 1rem;
+  border-radius: 18px;
+  max-width: 80%;
+  position: relative;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.user-message .message-bubble {
+  background-color: var(--primary-color);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.ai-message .message-bubble {
+  background-color: var(--light-color);
+  border-bottom-left-radius: 4px;
+}
+
+.message-time {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  margin-top: 0.25rem;
+  display: block;
+  text-align: right;
+}
+
+/* Thinking indicator styles */
+.thinking-bubble {
+  padding: 0.75rem 1rem;
+  min-width: 60px;
+  background-color: var(--light-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.thinking-dots {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.thinking-dots span {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--secondary-color);
+  opacity: 0.7;
+  animation: thinking-animation 1.4s infinite;
+}
+
+.thinking-dots span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.thinking-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.thinking-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes thinking-animation {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-5px);
+    opacity: 1;
+  }
+}
+
+/* Markdown content styling */
+.markdown-content {
+  line-height: 1.6;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.markdown-content h1 {
+  font-size: 1.5rem;
+}
+
+.markdown-content h2 {
+  font-size: 1.3rem;
+}
+
+.markdown-content h3 {
+  font-size: 1.2rem;
+}
+
+.markdown-content p {
+  margin-bottom: 0.75rem;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  padding-left: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.markdown-content li {
+  margin-bottom: 0.25rem;
+}
+
+.markdown-content code {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+  padding: 0.2em 0.4em;
+  font-family: monospace;
+  font-size: 0.85em;
+  word-break: break-all;
+}
+
+.markdown-content pre {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+  padding: 0.75rem;
+  overflow-x: auto;
+  margin-bottom: 0.75rem;
+  max-width: 100%;
+}
+
+.markdown-content pre code {
+  font-size: 0.85em;
+  padding: 0;
+  background-color: transparent;
+}
+
+.markdown-content blockquote {
+  border-left: 4px solid var(--primary-color);
+  padding-left: 1rem;
+  margin-left: 0;
+  margin-right: 0;
+  font-style: italic;
+}
+
+.markdown-content a {
+  color: var(--accent-color);
+  text-decoration: underline;
+  word-break: break-all;
+}
+
+.markdown-content img {
+  max-width: 100%;
+  height: auto;
+  margin: 0.5rem 0;
+  display: block;
+}
+
+.markdown-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 1rem;
+  font-size: 0.9em;
+  overflow-x: auto;
+  display: block;
+}
+
+.markdown-content th,
+.markdown-content td {
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.markdown-content th {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Ensure the last paragraph doesn't have a margin-bottom */
+.markdown-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Mobile devices */
+@media (max-width: 480px) {
+  .message-list {
+    padding: var(--space-sm);
+    gap: var(--space-sm);
+  }
+  
+  .welcome-message {
+    padding: var(--space-lg);
+  }
+  
+  .message-bubble {
+    max-width: 90%;
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .thinking-bubble {
+    padding: 0.5rem 0.75rem;
+    min-width: 50px;
+  }
+  
+  .thinking-dots span {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .markdown-content img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .markdown-content pre {
+    padding: 0.5rem;
+  }
+  
+  .markdown-content h1 {
+    font-size: 1.3rem;
+  }
+  
+  .markdown-content h2 {
+    font-size: 1.2rem;
+  }
+  
+  .markdown-content h3 {
+    font-size: 1.1rem;
+  }
+}
+
+/* Landscape mode */
+@media (max-height: 480px) and (orientation: landscape) {
+  .message-list {
+    padding: var(--space-xs) var(--space-sm);
+  }
+  
+  .welcome-message {
+    padding: var(--space-md);
+  }
+  
+  .welcome-message h2 {
+    margin-bottom: var(--space-sm);
+  }
+} 

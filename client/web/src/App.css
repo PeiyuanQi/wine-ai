@@ -1,0 +1,74 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.app-header {
+  background-color: var(--primary-color);
+  color: white;
+  padding: var(--space-md);
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.app-header h1 {
+  font-size: var(--font-size-xl);
+  margin: 0;
+}
+
+.app-content {
+  flex: 1;
+  display: flex;
+  padding: var(--space-md);
+  overflow: hidden;
+}
+
+.app-footer {
+  background-color: var(--secondary-color);
+  color: white;
+  text-align: center;
+  padding: var(--space-sm);
+  font-size: var(--font-size-small);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+/* Mobile (portrait) */
+@media (max-width: 480px) {
+  .app-header {
+    padding: var(--space-sm);
+  }
+  
+  .app-header h1 {
+    font-size: var(--font-size-large);
+  }
+  
+  .app-content {
+    padding: var(--space-sm);
+  }
+  
+  .app-footer {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: 0.75rem;
+  }
+}
+
+/* Landscape mode on phones */
+@media (max-height: 480px) and (orientation: landscape) {
+  .app-header {
+    padding: var(--space-xs);
+  }
+  
+  .app-header h1 {
+    font-size: var(--font-size-large);
+  }
+  
+  .app-footer {
+    padding: var(--space-xs);
+  }
+} 

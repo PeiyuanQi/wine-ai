@@ -19,6 +19,7 @@ venv/
 .vscode/
 *.swp
 *.swo
+.cursor
 
 # OS specific files
 .DS_Store
@@ -26,3 +27,17 @@ Thumbs.db
 
 # Sensitive env var
 .env
+
+# Client files
+client/web/node_modules/
+client/web/.vscode/
+client/web/.env
+client/web/dist/
+client/web/build/
+package-lock.json
+
+# Server files
+server/data/
+server/logs/
+server/logs/*
+server/logs/*/*
