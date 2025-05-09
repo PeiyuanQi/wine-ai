@@ -83,4 +83,4 @@ You can then start asking wine-related questions through the client interface.
 
 ## License
 
-This project is open source and available under the [MIT License](LICENSE). 
+This project is open source and available under the [GPL v3 License](LICENSE). 
