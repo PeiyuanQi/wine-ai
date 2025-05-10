@@ -4,4 +4,6 @@ jieba
 fastapi
 uvicorn
 pydantic
-requests 
+requests
+email-validator 
+python-multipart

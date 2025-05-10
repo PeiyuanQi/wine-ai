@@ -1,9 +1,13 @@
 import requests
 import sys
 import json
+import os.path
+import getpass
 
 QUERY_URL = "http://localhost:8080/api/query"
 STATUS_URL = "http://localhost:8080/api/status"
+TOKEN_REQUEST_URL = "http://localhost:8080/api/request-token"
+TOKEN_FILE = os.path.expanduser("~/.wine_ai_token")
 
 def get_server_status():
     """Checks the server status endpoint."""
@@ -19,6 +23,66 @@ def get_server_status():
         print(f"[警告] 无法解析服务器状态响应 {STATUS_URL}.")
         return "unknown"
 
+def load_token():
+    """Load token from file if it exists"""
+    if os.path.exists(TOKEN_FILE):
+        try:
+            with open(TOKEN_FILE, "r") as f:
+                return f.read().strip()
+        except Exception as e:
+            print(f"[警告] 读取令牌文件时出错: {e}")
+    return None
+
+def save_token(token):
+    """Save token to file"""
+    try:
+        with open(TOKEN_FILE, "w") as f:
+            f.write(token)
+        # Set permissions to user-only read/write
+        os.chmod(TOKEN_FILE, 0o600)
+    except Exception as e:
+        print(f"[警告] 保存令牌文件时出错: {e}")
+
+def request_new_token():
+    """Request a new token from the server"""
+    print("您需要一个访问令牌才能继续。")
+    
+    while True:
+        # Get email from user
+        email = input("请输入您的电子邮件地址: ").strip()
+        if not email or "@" not in email:
+            print("请输入一个有效的电子邮件地址。")
+            continue
+            
+        # Request token from server
+        try:
+            response = requests.post(TOKEN_REQUEST_URL, json={"email": email}, timeout=10)
+            response.raise_for_status()
+            data = response.json()
+            
+            # Check if token is directly returned (no email configuration)
+            if "display_token" in data and data["display_token"] and "token" in data:
+                token = data["token"]
+                print(f"{data.get('message', '令牌已生成')}")
+                print(f"您的令牌是: {token}")
+                print("请保存此令牌，它在24小时内有效。")
+                save_token(token)
+                return token
+            else:
+                # Normal flow - token sent by email
+                print(f"令牌请求已提交。请检查您的电子邮件 ({email}) 获取令牌。")
+                
+                # Get token from user
+                token = input("请输入您收到的令牌: ").strip().upper()
+                if token:
+                    save_token(token)
+                    return token
+                
+        except requests.exceptions.RequestException as e:
+            print(f"[错误] 请求令牌时出错: {e}")
+            if input("是否重试? (y/n): ").lower() != 'y':
+                return None
+
 def run_chat_client():
     print("--- 葡萄酒知识库聊天客户端 ---")
 
@@ -31,7 +95,16 @@ def run_chat_client():
     else:
         print(f"已连接到服务器: {QUERY_URL} (状态未知)")
 
+    # Get token
+    token = load_token()
+    if not token:
+        token = request_new_token()
+        if not token:
+            print("错误: 无法获取有效的访问令牌。")
+            return
+
     print("请输入您的葡萄酒相关问题，或输入 'quit' 或 'exit' 退出。")
+    print("输入 'token' 可更新您的访问令牌。")
 
     while True:
         try:
@@ -44,13 +117,32 @@ def run_chat_client():
             if query.lower() in ["quit", "exit"]:
                 print("再见！")
                 break
+                
+            if query.lower() == "token":
+                token = request_new_token()
+                if not token:
+                    print("警告: 继续使用现有令牌。")
+                else:
+                    print("令牌已更新。")
+                continue
 
             # Prepare JSON payload
             payload = {"query": query}
+            headers = {"X-API-Token": token}
 
             # Send request to server
             try:
-                response = requests.post(QUERY_URL, json=payload, timeout=60)
+                response = requests.post(QUERY_URL, json=payload, headers=headers, timeout=60)
+                
+                if response.status_code == 401:
+                    print("访问令牌已过期或无效。请获取新令牌。")
+                    token = request_new_token()
+                    if not token:
+                        print("错误: 无法获取有效的访问令牌。")
+                        break
+                    # Retry with new token
+                    response = requests.post(QUERY_URL, json=payload, headers={"X-API-Token": token}, timeout=60)
+                
                 response.raise_for_status()
 
                 # Process successful response
