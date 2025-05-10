@@ -53,7 +53,7 @@ class TokenValidationMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         # Skip token validation for token request endpoints and static files
         if (request.url.path == "/request-token" or 
-            request.url.path == "/api/request-token" or
+            request.url.path == "/api/tokens" or
             request.url.path == "/submit-token-request"):
             return await call_next(request)
             
@@ -132,15 +132,14 @@ async def get_status():
     """Endpoint to report server status, including dry-run mode."""
     return {"mode": "dry-run" if IS_DRY_RUN else "live"}
 
-@api_router.post("/query")
-async def handle_query(query_request: QueryRequest):
+@api_router.get("/query")
+async def handle_query(query: str):
     global client, knowledge_base, is_single_file_load, IS_DRY_RUN  # Access globals
 
     if not client:
         logger.error("OpenAI client not initialized, cannot handle query")
         raise HTTPException(status_code=500, detail="OpenAI客户端未初始化")
 
-    query = query_request.query
     logger.info(f"Received query: {query}")
 
     # Perform RAG using globally loaded knowledge and client
@@ -159,7 +158,7 @@ async def handle_query(query_request: QueryRequest):
     else:
         return {"answer": answer}
 
-@api_router.post("/request-token")
+@api_router.post("/tokens")
 async def request_token(token_request: TokenRequest):
     """Request a new access token"""
     email = token_request.email
@@ -405,22 +404,16 @@ async def submit_token_request(email: str = Form(...)):
 app.include_router(api_router)
 app.include_router(admin_router)
 
-# --- Add backward compatibility endpoints ---
-@app.get("/status")
-async def legacy_status():
-    """Legacy endpoint for backward compatibility"""
-    return await get_status()
-
-@app.post("/query")
-async def legacy_query(query_request: QueryRequest):
-    """Legacy endpoint for backward compatibility"""
-    return await handle_query(query_request)
-
 # --- Add Admin API Endpoints ---
 @admin_router.get("/tokens")
-async def get_token_history(limit: int = 50):
-    """Get token usage history"""
-    tokens = acl.get_token_history(limit)
+async def get_tokens(email: str = None, limit: int = 50):
+    """Get token usage history or tokens for a specific user"""
+    if email:
+        # Get tokens for specific user
+        tokens = acl.get_tokens_for_email(email)
+    else:
+        # Get token history
+        tokens = acl.get_token_history(limit)
     
     # Format timestamps for readability
     for token in tokens:
@@ -433,33 +426,15 @@ async def get_token_history(limit: int = 50):
         if expired_at:
             token["expired_time"] = datetime.fromtimestamp(expired_at).strftime("%Y-%m-%d %H:%M:%S")
     
-    return {"tokens": tokens}
+    return {"tokens": tokens, "email": email if email else None}
 
-@admin_router.post("/tokens/user")
-async def get_user_tokens(email_request: EmailRequest):
-    """Get all tokens for a specific user"""
-    tokens = acl.get_tokens_for_email(email_request.email)
-    
-    # Format timestamps for readability
-    for token in tokens:
-        created = token.get("created", 0)
-        expiry = token.get("expiry", 0)
-        expired_at = token.get("expired_at", 0)
-        
-        token["created_time"] = datetime.fromtimestamp(created).strftime("%Y-%m-%d %H:%M:%S") if created else "Unknown"
-        token["expiry_time"] = datetime.fromtimestamp(expiry).strftime("%Y-%m-%d %H:%M:%S") if expiry else "Unknown"
-        if expired_at:
-            token["expired_time"] = datetime.fromtimestamp(expired_at).strftime("%Y-%m-%d %H:%M:%S")
-    
-    return {"email": email_request.email, "tokens": tokens}
-
-@admin_router.post("/tokens/cleanup")
+@admin_router.delete("/tokens")
 async def cleanup_old_tokens(days: int = 90):
     """Clean up expired tokens older than specified days"""
     cleared = acl.clear_old_expired_tokens(days)
     return {"cleared": cleared, "message": f"Cleared {cleared} expired tokens older than {days} days"}
 
-@admin_router.get("/email-for-token/{token}")
+@admin_router.get("/tokens/{token}/email")
 async def get_email_for_token(token: str):
     """Get the email associated with a token"""
     email = acl.get_email_for_token(token)
